@@ -71,10 +71,11 @@ const checkLeapYear = (year) => new Date(year, 1, 29).getDate() === 29
 const handleError = (error, res) =>{
   let status
   if(error.response && error.response.status) status = error.response.status
-  else status = 505
+  else status = 500
 
   let message = "You have enter an invalid year, month or week value. Please make sure your inputs are whole number values."
   if(status === 404) message = error.response.data.detail
+  if(status === 500) message = "We have encountered an unexpected issue. Please try your request again"
 
     res.status(status).send({
       'error_message': message
