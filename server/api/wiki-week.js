@@ -15,6 +15,8 @@ const getSortedArticlesForWeek = async (year, month, start,end) => {
       let url = util.format(TOPDAILYVIEWS, `${year}`, `${month}`, `${strDay}`);
 
       const {data} = await axios.get(url)
+      if(!data.items)continue //Error from our URL retrieval
+
       data.items[0].articles.forEach(obj=>{
         map.set(obj.article, (map.get(obj.article) || 0) + obj.views)
       })
@@ -29,7 +31,6 @@ router.get("/article-view/:year/:month/:week", async (req,res)=>{
 
   try {
     const {year, month, week} = req.params
-
     const startDate = getStartDate(year, month, week)
     const endDate = getEndDate(year, month, week)
     const strMonth = startDate.slice(4,6)
@@ -37,7 +38,6 @@ router.get("/article-view/:year/:month/:week", async (req,res)=>{
     const endDay = +endDate.slice(6,8)
     if(isNaN(startDay) || isNaN(endDay)|| +month> 12 ) throw new ValidationError("'invalid week input'");
     const articles = await getSortedArticlesForWeek(year, strMonth, startDay, endDay)
-
     res.send({
       'year': year,
       'week': getWeekFormat(startDate, endDate),
